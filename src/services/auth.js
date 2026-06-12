@@ -4,7 +4,9 @@ import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
 
 export const registerUser = async ({ name, email, password }) => {
-  const existingUser = await User.findOne({ email });
+  const normalizedEmail = email.toLowerCase();
+
+  const existingUser = await User.findOne({ email: normalizedEmail });
 
   if (existingUser) {
     throw createHttpError(409, 'Email in use');
@@ -14,7 +16,7 @@ export const registerUser = async ({ name, email, password }) => {
 
   const newUser = await User.create({
     name,
-    email,
+    email: normalizedEmail,
     password: hashedPassword,
   });
 

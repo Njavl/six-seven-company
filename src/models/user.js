@@ -32,11 +32,16 @@ const userSchema = new Schema(
       ref: 'User',
       default: [],
     },
+    favorites: {
+      type: [Schema.Types.ObjectId],
+      ref: 'Recipe',
+      default: [],
+    },
   },
   {
     timestamps: true,
     versionKey: false,
-  },
+  }
 );
 
 userSchema.methods.toJSON = function () {
