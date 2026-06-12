@@ -1,10 +1,25 @@
 import createHttpError from 'http-errors';
 
 import { Recipe } from '../models/recipe.js';
-import { User } from '../models/user.js';
 
-export const getOwnRecipes = async (userId) => {
-  return await Recipe.find({ owner: userId }).sort({ createdAt: -1 });
+export const getOwnRecipes = async (userId, page = 1, perPage = 12) => {
+  const skip = (page - 1) * perPage;
+
+  const [recipes, total] = await Promise.all([
+    Recipe.find({ owner: userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(perPage),
+    Recipe.countDocuments({ owner: userId }),
+  ]);
+
+  return {
+    recipes,
+    page,
+    perPage,
+    total,
+    totalPages: Math.ceil(total / perPage),
+  };
 };
 
 export const addRecipeToFavorites = async (userId, recipeId) => {
@@ -14,15 +29,9 @@ export const addRecipeToFavorites = async (userId, recipeId) => {
     throw createHttpError(404, 'Recipe not found');
   }
 
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { $addToSet: { favorites: recipeId } },
-    { new: true },
-  );
-
-  if (!user) {
-    throw createHttpError(404, 'User not found');
-  }
+  await Recipe.findByIdAndUpdate(recipeId, {
+    $addToSet: { favorites: userId },
+  });
 
   return recipe;
 };
