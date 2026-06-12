@@ -1,12 +1,17 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 const ingredientSchema = new Schema(
   {
-    id: String,
-    measure: String,
-    name: String,
+    id: {
+      type: String,
+      required: true,
+    },
+    measure: {
+      type: String,
+      required: true,
+    },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const recipeSchema = new Schema(
@@ -15,44 +20,44 @@ const recipeSchema = new Schema(
       type: String,
       required: true,
     },
-
     category: {
       type: String,
       required: true,
     },
-
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'users',
+      required: true,
     },
-
     area: {
       type: String,
+      required: true,
     },
-
     instructions: {
       type: String,
       required: true,
     },
-
     description: {
       type: String,
+      required: true,
     },
-
     thumb: {
       type: String,
+      required: true,
     },
-
     time: {
       type: String,
+      required: true,
     },
-
-    ingredients: [ingredientSchema],
+    ingredients: {
+      type: [ingredientSchema],
+      required: true,
+    },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 export const Recipe = model('recipes', recipeSchema);
