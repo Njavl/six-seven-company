@@ -43,3 +43,7 @@ export const addRecipeToFavorites = async (userId, recipeId) => {
 
   return recipe;
 };
+
+export const getRecipeById = async id => {
+  return Recipe.findById(id);
+};

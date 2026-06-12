@@ -8,6 +8,7 @@ import {
 } from '../controllers/recipes.js';
 
 import { authenticate } from '../middlewares/authenticate.js';
+import { getRecipeByIdController } from '../controllers/recipes.js';
 
 const router = Router();
 
@@ -19,5 +20,7 @@ router.delete(
 router.get('/own', authenticate, getOwnRecipesController);
 
 router.post('/:recipeId/favorite', authenticate, addRecipeToFavoritesController);
+
+router.get('/:recipeId', getRecipeByIdController);
 
 export default router;

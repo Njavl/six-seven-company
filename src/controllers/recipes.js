@@ -4,7 +4,9 @@ import { removeRecipeFromFavorites } from '../services/recipes.js';
 import {
   addRecipeToFavorites,
   getOwnRecipes,
+  getRecipeById,
 } from '../services/recipes.js';
+import mongoose from 'mongoose';
 
 export const removeRecipeFromFavoritesController = async (req, res) => {
   const { recipeId } = req.params;
@@ -54,5 +56,25 @@ export const addRecipeToFavoritesController = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const getRecipeByIdController = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(recipeId)) {
+      throw createHttpError(400, 'Invalid recipe ID format');
+    }
+
+    const recipe = await getRecipeById(recipeId);
+
+    if (!recipe) {
+      throw createHttpError(404, 'Recipe not found');
+    }
+
+    res.status(200).json(recipe);
+  } catch (err) {
+    next(err);
   }
 };
