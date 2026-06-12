@@ -1,6 +1,14 @@
+import { Types } from 'mongoose';
+import { User } from '../models/user.js';
 import createHttpError from 'http-errors';
-
 import { Recipe } from '../models/recipe.js';
+
+export const removeRecipeFromFavorites = (userId, recipeId) =>
+  User.findByIdAndUpdate(
+    userId,
+    { $pull: { favorites: new Types.ObjectId(recipeId) } },
+    { new: true, strict: false }
+  );
 
 export const getOwnRecipes = async (userId, page = 1, perPage = 12) => {
   const skip = (page - 1) * perPage;
