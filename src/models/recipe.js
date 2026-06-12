@@ -11,7 +11,7 @@ const ingredientSchema = new Schema(
       required: true,
     },
   },
-  { _id: false },
+  { _id: false }
 );
 
 const recipeSchema = new Schema(
@@ -26,12 +26,11 @@ const recipeSchema = new Schema(
     },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'users',
+      ref: 'User',
       required: true,
     },
     area: {
       type: String,
-      required: true,
     },
     instructions: {
       type: String,
@@ -49,6 +48,10 @@ const recipeSchema = new Schema(
       type: String,
       required: true,
     },
+    calories: {
+      type: Number,
+      default: null,
+    },
     ingredients: {
       type: [ingredientSchema],
       required: true,
@@ -57,7 +60,7 @@ const recipeSchema = new Schema(
   {
     timestamps: true,
     versionKey: false,
-  },
+  }
 );
 
-export const Recipe = model('recipes', recipeSchema);
+export const Recipe = model('Recipe', recipeSchema);
