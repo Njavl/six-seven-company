@@ -1,6 +1,6 @@
 import createHttpError from 'http-errors';
-import { User } from '../models/user';
-import { Session } from '../models/session';
+import { User } from '../models/user.js';
+import { Session } from '../models/session.js';
 
 export const authenticate = async (req, res, next) => {
   const { accessToken, sessionId } = req.cookies;

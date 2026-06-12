@@ -14,11 +14,16 @@ export const registerUser = async ({ name, email, password }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await User.create({
-    name,
-    email: normalizedEmail,
-    password: hashedPassword,
-  });
-
-  return newUser;
+  try {
+    return await User.create({
+      name,
+      email: normalizedEmail,
+      password: hashedPassword,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      throw createHttpError(409, 'Email in use');
+    }
+    throw error;
+  }
 };

@@ -1,25 +1,27 @@
 import { Router } from 'express';
 import { authenticate } from '../middlewares/authenticate.js';
-import { removeRecipeFromFavoritesController } from '../controllers/recipes.js';
-
 import {
   addRecipeToFavoritesController,
   getOwnRecipesController,
+  getRecipeByIdController,
+  removeRecipeFromFavoritesController,
 } from '../controllers/recipes.js';
 
-import { authenticate } from '../middlewares/authenticate.js';
-import { getRecipeByIdController } from '../controllers/recipes.js';
-
 const router = Router();
+
+router.get('/own', authenticate, getOwnRecipesController);
 
 router.delete(
   '/:recipeId/favorite',
   authenticate,
   removeRecipeFromFavoritesController
 );
-router.get('/own', authenticate, getOwnRecipesController);
 
-router.post('/:recipeId/favorite', authenticate, addRecipeToFavoritesController);
+router.post(
+  '/:recipeId/favorite',
+  authenticate,
+  addRecipeToFavoritesController
+);
 
 router.get('/:recipeId', getRecipeByIdController);
 

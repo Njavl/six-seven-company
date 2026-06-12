@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { User } from '../models/user.js';
 import createHttpError from 'http-errors';
 import { Recipe } from '../models/recipe.js';
@@ -6,8 +5,8 @@ import { Recipe } from '../models/recipe.js';
 export const removeRecipeFromFavorites = (userId, recipeId) =>
   User.findByIdAndUpdate(
     userId,
-    { $pull: { favorites: new Types.ObjectId(recipeId) } },
-    { new: true, strict: false }
+    { $pull: { favorites: recipeId } },
+    { new: true }
   );
 
 export const getOwnRecipes = async (userId, page = 1, perPage = 12) => {
@@ -37,8 +36,8 @@ export const addRecipeToFavorites = async (userId, recipeId) => {
     throw createHttpError(404, 'Recipe not found');
   }
 
-  await Recipe.findByIdAndUpdate(recipeId, {
-    $addToSet: { favorites: userId },
+  await User.findByIdAndUpdate(userId, {
+    $addToSet: { favorites: recipeId },
   });
 
   return recipe;
