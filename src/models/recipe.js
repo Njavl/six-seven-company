@@ -1,6 +1,81 @@
 import { model, Schema } from 'mongoose';
 
-const ingredientSchema = new Schema({
+
+
+// З ГІЛКИ MAIN
+// ==========================================================
+
+
+const ingredientSchema = new Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+    measure: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+const recipeSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    area: {
+      type: String,
+    },
+    instructions: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    thumb: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    calories: {
+      type: Number,
+      default: null,
+    },
+    ingredients: {
+      type: [ingredientSchema],
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
+);
+
+export const Recipe = model('Recipe', recipeSchema);
+
+// ==========================================================
+// МОЯ  СХЕМА + індекси
+// ==========================================================
+/*
+const oldIngredientSchema = new Schema({
   ingredient: {
     type: String,
     required: true,
@@ -13,7 +88,7 @@ const ingredientSchema = new Schema({
   },
 });
 
-const recipeSchema = new Schema(
+const oldRecipeSchema = new Schema(
   {
     name: {
       type: String,
@@ -38,7 +113,7 @@ const recipeSchema = new Schema(
       required: true,
     },
     ingredients: {
-      type: [ingredientSchema],
+      type: [oldIngredientSchema],
       required: true,
     },
     instruction: {
@@ -61,9 +136,4 @@ const recipeSchema = new Schema(
     versionKey: false,
   }
 );
-
-recipeSchema.index({ category: 1 });
-recipeSchema.index({ owner: 1 });
-recipeSchema.index({ name: 'text' });
-
-export const Recipe = model('recipe', recipeSchema);
+*/
