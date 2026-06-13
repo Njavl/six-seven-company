@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { errors } from 'celebrate';
 import authRouter from './routes/auth.js';
 import usersRouter from './routes/users.js';
 import categoriesRouter from './routes/categories.js';
@@ -22,4 +23,5 @@ app.use('/api/ingredients', ingredientsRouter);
 app.use('/api/recipes', recipesRouter);
 
 app.use(notFoundHandler);
+app.use(errors());
 app.use(errorHandler);
