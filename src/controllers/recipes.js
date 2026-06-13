@@ -1,23 +1,39 @@
 import createHttpError from 'http-errors';
 import mongoose, { isValidObjectId } from 'mongoose';
-import { removeRecipeFromFavorites } from '../services/recipes.js';
+
 import {
   addRecipeToFavorites,
+  createRecipe,
   getOwnRecipes,
   getRecipeById,
+  removeRecipeFromFavorites,
+  searchRecipes,
 } from '../services/recipes.js';
 
+export const getRecipes = async (req, res, next) => {
+  try {
+    const result = await searchRecipes(req.query);
 
-export const removeRecipeFromFavoritesController = async (req, res) => {
-  const { recipeId } = req.params;
-
-  if (!isValidObjectId(recipeId)) {
-    throw createHttpError(400, 'Invalid recipe id');
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
   }
+};
 
-  await removeRecipeFromFavorites(req.user._id, recipeId);
+export const removeRecipeFromFavoritesController = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
 
-  res.json({ message: 'Recipe removed from favorites' });
+    if (!isValidObjectId(recipeId)) {
+      throw createHttpError(400, 'Invalid recipe id');
+    }
+
+    await removeRecipeFromFavorites(req.user._id, recipeId);
+
+    res.json({ message: 'Recipe removed from favorites' });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getOwnRecipesController = async (req, res, next) => {
@@ -74,26 +90,32 @@ export const getRecipeByIdController = async (req, res, next) => {
     }
 
     res.status(200).json(recipe);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
-import { Recipe } from '../models/recipe.js';
 
-export const createRecipe = async (req, res, next) => {
+export const createRecipeController = async (req, res, next) => {
   try {
-    const recipeData = { ...req.body };
-
-    if (typeof recipeData.ingredients === 'string') {
-      recipeData.ingredients = JSON.parse(recipeData.ingredients);
+    if (!req.file) {
+      throw createHttpError(400, 'Recipe image is required');
     }
-    const photoUrl = req.file ? req.file.path : null;
 
-    const recipe = await Recipe.create({
-      ...recipeData,
-      recipeImg: photoUrl,
-      owner: req.user._id,
-    });
+    const data = { ...req.body, thumb: req.file.path };
+
+    if (typeof data.ingredients === 'string') {
+      try {
+        data.ingredients = JSON.parse(data.ingredients);
+      } catch {
+        throw createHttpError(400, 'Invalid ingredients format');
+      }
+    }
+
+    if (data.calories === '' || data.calories === null) {
+      delete data.calories;
+    }
+
+    const recipe = await createRecipe(req.user._id, data);
 
     res.status(201).json(recipe);
   } catch (error) {

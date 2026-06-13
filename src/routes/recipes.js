@@ -1,19 +1,33 @@
 import { Router } from 'express';
-import { authenticate } from '../middlewares/authenticate.js';
 import { celebrate } from 'celebrate';
+import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/upload.js';
 import {
-  createRecipe,
   addRecipeToFavoritesController,
+  createRecipeController,
   getOwnRecipesController,
   getRecipeByIdController,
+  getRecipes,
   removeRecipeFromFavoritesController,
 } from '../controllers/recipes.js';
-import { createRecipeValidation } from '../validation/recipes.js';
-import { upload } from '../middlewares/upload.js';
+import {
+  createRecipeSchema,
+  searchRecipesSchema,
+} from '../validation/recipes.js';
 
 const router = Router();
 
+router.get('/search', celebrate(searchRecipesSchema), getRecipes);
+
 router.get('/own', authenticate, getOwnRecipesController);
+
+router.post(
+  '/',
+  authenticate,
+  upload.single('recipeImg'),
+  celebrate(createRecipeSchema),
+  createRecipeController
+);
 
 router.delete(
   '/:recipeId/favorite',
@@ -28,12 +42,5 @@ router.post(
 );
 
 router.get('/:recipeId', getRecipeByIdController);
-
-router.post(
-  '/',
-  upload.single('recipeImg'),
-  celebrate(createRecipeValidation),
-  createRecipe
-);
 
 export default router;
