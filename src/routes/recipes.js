@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { authenticate } from '../middlewares/authenticate.js';
+import { celebrate } from 'celebrate';
 import {
+  createRecipe,
   addRecipeToFavoritesController,
   getOwnRecipesController,
   getRecipeByIdController,
   removeRecipeFromFavoritesController,
 } from '../controllers/recipes.js';
-import { celebrate } from 'celebrate';
-import { createRecipe } from '../controllers/recipes.js';
 import { createRecipeValidation } from '../validation/recipes.js';
 import { upload } from '../middlewares/upload.js';
 
