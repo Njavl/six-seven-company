@@ -1,22 +1,28 @@
-import bcrypt from "bcrypt";
-import { Session } from "../models/session.js";
-import { createSession, setSessionCookies, registerUser } from "../services/auth.js";
+import bcrypt from 'bcrypt';
+import createHttpError from 'http-errors';
+import { User } from '../models/user.js';
+import { Session } from '../models/session.js';
+import {
+  createSession,
+  setSessionCookies,
+  registerUser,
+} from '../services/auth.js';
 
 export const loginUser = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    throw createHttpError(401, "Invalid credentials");
+    throw createHttpError(401, 'Invalid credentials');
   }
 
   const isValidPassword = await bcrypt.compare(
     req.body.password,
-    user.password,
+    user.password
   );
-    if (!isValidPassword) {
-        throw createHttpError(401, "Invalid credentials");
-    }
+  if (!isValidPassword) {
+    throw createHttpError(401, 'Invalid credentials');
+  }
 
- await Session.deleteOne({ userId: user._id });
+  await Session.deleteOne({ userId: user._id });
 
   const session = await createSession(user._id);
   setSessionCookies(res, session);
@@ -28,7 +34,7 @@ export const refreshUserSession = async (req, res) => {
   const { sessionId, refreshToken } = req.cookies;
 
   if (!sessionId || !refreshToken) {
-    throw createHttpError(401, "Session not found");
+    throw createHttpError(401, 'Session not found');
   }
 
   const session = await Session.findOne({
@@ -37,16 +43,16 @@ export const refreshUserSession = async (req, res) => {
   });
 
   if (!session) {
-    throw createHttpError(401, "Session token expired");
+    throw createHttpError(401, 'Session token expired');
   }
 
   const isRefreshTokenExpired = session.refreshTokenValidUntil < new Date();
   if (isRefreshTokenExpired) {
     await session.deleteOne();
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
-    res.clearCookie("sessionId");
-    throw createHttpError(401, "Invalid session");
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.clearCookie('sessionId');
+    throw createHttpError(401, 'Invalid session');
   }
 
   await session.deleteOne();
@@ -55,7 +61,7 @@ export const refreshUserSession = async (req, res) => {
   setSessionCookies(res, newSession);
 
   res.status(200).json({
-    message: "Session refreshed",
+    message: 'Session refreshed',
   });
 };
 
@@ -64,9 +70,9 @@ export const logoutUser = async (req, res) => {
     await Session.deleteOne({ _id: req.cookies.sessionId });
   }
 
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
-  res.clearCookie("sessionId");
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken');
+  res.clearCookie('sessionId');
 
   res.status(204).send();
 };
