@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import { Session } from "../models/session.js";
-import { createSession, setSessionCookies } from "../services/auth.js";
-
+import { createSession, setSessionCookies, registerUser } from "../services/auth.js";
 
 export const loginUser = async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
@@ -70,4 +69,18 @@ export const logoutUser = async (req, res) => {
   res.clearCookie("sessionId");
 
   res.status(204).send();
+};
+
+export const registerUserController = async (req, res, next) => {
+  try {
+    const user = await registerUser(req.body);
+
+    res.status(201).json({
+      status: 201,
+      message: 'User registered successfully',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
