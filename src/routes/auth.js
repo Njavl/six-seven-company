@@ -5,8 +5,8 @@ import { loginUser, logoutUser, refreshUserSession } from '../controllers/auth.j
 
 const router = Router();
 
-router.post("/auth/login", celebrate(loginUserSchema), loginUser);
-router.post("/auth/logout", logoutUser);
-router.post("/auth/refresh", refreshUserSession);
+router.post("/login", celebrate(loginUserSchema), loginUser);
+router.post("/logout", logoutUser);
+router.post("/refresh", refreshUserSession);
 
 export default router;
