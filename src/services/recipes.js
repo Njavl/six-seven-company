@@ -1,9 +1,10 @@
 import createHttpError from 'http-errors';
 
-import { Category } from '../models/category.js';
 import { Ingredient } from '../models/ingredient.js';
 import { Recipe } from '../models/recipe.js';
 import { User } from '../models/user.js';
+
+const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const toPaginationData = (page, perPage, total) => {
   return {
@@ -25,21 +26,12 @@ export const searchRecipes = async ({
   const filter = {};
 
   if (category) {
-    const categoryExists = await Category.exists({ name: category });
-
-    if (!categoryExists) {
-      return {
-        ...toPaginationData(page, perPage, 0),
-        recipes: [],
-      };
-    }
-
     filter.category = category;
   }
 
   if (search) {
     filter.title = {
-      $regex: search,
+      $regex: escapeRegex(search),
       $options: 'i',
     };
   }
@@ -47,12 +39,12 @@ export const searchRecipes = async ({
   if (ingredient) {
     const matchedIngredients = await Ingredient.find({
       name: {
-        $regex: ingredient,
+        $regex: escapeRegex(ingredient),
         $options: 'i',
       },
     }).select('_id');
 
-    const ingredientIds = matchedIngredients.map((item) => item._id);
+    const ingredientIds = matchedIngredients.map(item => item._id);
 
     if (ingredientIds.length === 0) {
       return {
@@ -67,11 +59,7 @@ export const searchRecipes = async ({
   }
 
   const [recipes, total] = await Promise.all([
-    Recipe.find(filter)
-      .skip(skip)
-      .limit(perPage)
-      .populate('ingredients.id', 'name desc img')
-      .sort({ createdAt: -1 }),
+    Recipe.find(filter).skip(skip).limit(perPage).sort({ createdAt: -1 }),
     Recipe.countDocuments(filter),
   ]);
 
@@ -85,7 +73,7 @@ export const removeRecipeFromFavorites = (userId, recipeId) =>
   User.findByIdAndUpdate(
     userId,
     { $pull: { favorites: recipeId } },
-    { new: true },
+    { new: true }
   );
 
 export const getOwnRecipes = async (userId, page = 1, perPage = 12) => {
@@ -122,6 +110,6 @@ export const addRecipeToFavorites = async (userId, recipeId) => {
   return recipe;
 };
 
-export const getRecipeById = async (id) => {
+export const getRecipeById = async id => {
   return Recipe.findById(id);
 };

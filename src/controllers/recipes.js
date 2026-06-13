@@ -11,7 +11,7 @@ import {
 
 export const getRecipes = async (req, res, next) => {
   try {
-    const result = await searchRecipes(req.validatedQuery);
+    const result = await searchRecipes(req.query);
 
     res.status(200).json(result);
   } catch (error) {

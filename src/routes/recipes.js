@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { celebrate } from 'celebrate';
 import { authenticate } from '../middlewares/authenticate.js';
 import {
   addRecipeToFavoritesController,
@@ -7,26 +8,24 @@ import {
   getRecipes,
   removeRecipeFromFavoritesController,
 } from '../controllers/recipes.js';
-
-import { validateQuery } from '../middlewares/validatebody.js';
 import { searchRecipesSchema } from '../validation/recipes.js';
 
 const router = Router();
 
-router.get('/search', validateQuery(searchRecipesSchema), getRecipes);
+router.get('/search', celebrate(searchRecipesSchema), getRecipes);
 
 router.get('/own', authenticate, getOwnRecipesController);
 
 router.delete(
   '/:recipeId/favorite',
   authenticate,
-  removeRecipeFromFavoritesController,
+  removeRecipeFromFavoritesController
 );
 
 router.post(
   '/:recipeId/favorite',
   authenticate,
-  addRecipeToFavoritesController,
+  addRecipeToFavoritesController
 );
 
 router.get('/:recipeId', getRecipeByIdController);
