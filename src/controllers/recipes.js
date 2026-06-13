@@ -3,6 +3,7 @@ import mongoose, { isValidObjectId } from 'mongoose';
 
 import {
   addRecipeToFavorites,
+  createRecipe,
   getOwnRecipes,
   getRecipeById,
   removeRecipeFromFavorites,
@@ -89,6 +90,34 @@ export const getRecipeByIdController = async (req, res, next) => {
     }
 
     res.status(200).json(recipe);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createRecipeController = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      throw createHttpError(400, 'Recipe image is required');
+    }
+
+    const data = { ...req.body, thumb: req.file.path };
+
+    if (typeof data.ingredients === 'string') {
+      try {
+        data.ingredients = JSON.parse(data.ingredients);
+      } catch {
+        throw createHttpError(400, 'Invalid ingredients format');
+      }
+    }
+
+    if (data.calories === '' || data.calories === null) {
+      delete data.calories;
+    }
+
+    const recipe = await createRecipe(req.user._id, data);
+
+    res.status(201).json(recipe);
   } catch (error) {
     next(error);
   }

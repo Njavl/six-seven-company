@@ -113,3 +113,6 @@ export const addRecipeToFavorites = async (userId, recipeId) => {
 export const getRecipeById = async id => {
   return Recipe.findById(id);
 };
+
+export const createRecipe = (ownerId, data) =>
+  Recipe.create({ ...data, owner: ownerId });
