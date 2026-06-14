@@ -47,9 +47,25 @@ export const getRecipeById = async id => {
   return Recipe.findById(id);
 };
 
-export const getFavoriteRecipes = async userId => {
+export const getFavoriteRecipes = async (
+  userId,
+  page = 1,
+  perPage = 12
+) => {
   const user = await User.findById(userId).populate('favorites');
-  return user.favorites;
+
+  const total = user.favorites.length;
+  const skip = (page - 1) * perPage;
+
+  const recipes = user.favorites.slice(skip, skip + perPage);
+
+  return {
+    recipes,
+    page,
+    perPage,
+    total,
+    totalPages: Math.ceil(total / perPage),
+  };
 };
 
 export const createRecipe = (ownerId, data) =>
