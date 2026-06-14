@@ -1,6 +1,12 @@
-import Category from "../models/category.js";
+import createHttpError from "http-errors";
+import { getAllCategories }  from "../services/categories.js";
 
-export const getAllCategories = async (req, res) => {
-  const categories = await Category.find();
-  res.status(200).json(categories);
-}
+export const getAllCategoriesController = async (req, res, next) => {
+  try {
+    const categories = await getAllCategories();
+
+    res.status(200).json(categories);
+  } catch (error) {
+    next(createHttpError(500, error.message));
+  }
+};
