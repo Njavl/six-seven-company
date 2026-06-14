@@ -47,8 +47,10 @@ export const getRecipeById = async id => {
   return Recipe.findById(id);
 };
 
-export const getFavoriteRecipes = async (userId) => {
+export const getFavoriteRecipes = async userId => {
   const user = await User.findById(userId).populate('favorites');
-
   return user.favorites;
 };
+
+export const createRecipe = (ownerId, data) =>
+  Recipe.create({ ...data, owner: ownerId });

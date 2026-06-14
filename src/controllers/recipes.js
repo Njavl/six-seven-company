@@ -5,9 +5,9 @@ import {
   addRecipeToFavorites,
   getOwnRecipes,
   getRecipeById,
+  getFavoriteRecipes,
 } from '../services/recipes.js';
 import mongoose from 'mongoose';
-import { getFavoriteRecipes } from '../services/recipes.js';
 
 export const removeRecipeFromFavoritesController = async (req, res) => {
   const { recipeId } = req.params;

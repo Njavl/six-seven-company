@@ -5,8 +5,8 @@ import {
   getOwnRecipesController,
   getRecipeByIdController,
   removeRecipeFromFavoritesController,
+  getFavoriteRecipesController,
 } from '../controllers/recipes.js';
-import { getFavoriteRecipesController } from '../controllers/recipes.js';
 
 const router = Router();
 
