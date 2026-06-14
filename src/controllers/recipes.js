@@ -7,6 +7,7 @@ import {
   getRecipeById,
 } from '../services/recipes.js';
 import mongoose from 'mongoose';
+import { getFavoriteRecipes } from '../services/recipes.js';
 
 export const removeRecipeFromFavoritesController = async (req, res) => {
   const { recipeId } = req.params;
@@ -76,5 +77,19 @@ export const getRecipeByIdController = async (req, res, next) => {
     res.status(200).json(recipe);
   } catch (err) {
     next(err);
+  }
+};
+
+export const getFavoriteRecipesController = async (req, res, next) => {
+  try {
+    const favorites = await getFavoriteRecipes(req.user._id);
+
+    res.status(200).json({
+      status: 200,
+      message: 'Favorite recipes fetched successfully',
+      data: favorites,
+    });
+  } catch (error) {
+    next(error);
   }
 };

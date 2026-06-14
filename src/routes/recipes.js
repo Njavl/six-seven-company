@@ -6,6 +6,7 @@ import {
   getRecipeByIdController,
   removeRecipeFromFavoritesController,
 } from '../controllers/recipes.js';
+import { getFavoriteRecipesController } from '../controllers/recipes.js';
 
 const router = Router();
 
@@ -22,6 +23,8 @@ router.post(
   authenticate,
   addRecipeToFavoritesController
 );
+
+router.get('/favorites', authenticate, getFavoriteRecipesController);
 
 router.get('/:recipeId', getRecipeByIdController);
 
