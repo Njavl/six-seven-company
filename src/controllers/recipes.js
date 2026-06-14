@@ -122,3 +122,17 @@ export const createRecipeController = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getFavoriteRecipesController = async (req, res, next) => {
+  try {
+    const favorites = await getFavoriteRecipes(req.user._id);
+
+    res.status(200).json({
+      status: 200,
+      message: 'Favorite recipes fetched successfully',
+      data: favorites,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
