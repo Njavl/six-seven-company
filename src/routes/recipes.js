@@ -9,6 +9,7 @@ import {
   getRecipeByIdController,
   getRecipes,
   removeRecipeFromFavoritesController,
+  getFavoriteRecipesController,
 } from '../controllers/recipes.js';
 import {
   createRecipeSchema,
@@ -40,6 +41,8 @@ router.post(
   authenticate,
   addRecipeToFavoritesController
 );
+
+router.get('/favorites', authenticate, getFavoriteRecipesController);
 
 router.get('/:recipeId', getRecipeByIdController);
 
