@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
 import { errors } from 'celebrate';
 import authRouter from './routes/auth.js';
 import usersRouter from './routes/users.js';
@@ -10,11 +12,17 @@ import recipesRouter from './routes/recipes.js';
 import { notFoundHandler } from './middlewares/notfound.js';
 import { errorHandler } from './middlewares/errorhandler.js';
 
+const swaggerDocument = JSON.parse(
+  readFileSync(new URL('./docs/swagger.json', import.meta.url))
+);
+
 export const app = express();
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
