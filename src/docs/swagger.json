@@ -7,6 +7,10 @@
   },
   "servers": [
     {
+      "url": "/",
+      "description": "Current host (works on Render and locally)"
+    },
+    {
       "url": "http://localhost:3000",
       "description": "Local development server"
     }
@@ -19,6 +23,10 @@
     {
       "name": "Users",
       "description": "Current user information"
+    },
+    {
+      "name": "Categories",
+      "description": "Recipe categories"
     },
     {
       "name": "Ingredients",
@@ -150,7 +158,12 @@
           "204": {
             "description": "User logged out successfully"
           }
-        }
+        },
+        "security": [
+          {
+            "sessionId": []
+          }
+        ]
       }
     },
     "/api/auth/refresh": {
@@ -522,6 +535,86 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Get all recipe categories",
+        "responses": {
+          "200": {
+            "description": "Category list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recipes/favorites": {
+      "get": {
+        "tags": ["Recipes"],
+        "summary": "Get the current user's favorite recipes",
+        "security": [
+          {
+            "accessToken": [],
+            "sessionId": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current user's favorite recipes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "message", "data"],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Favorite recipes fetched successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RecipePage"
+                    }
+                  }
                 }
               }
             }
@@ -913,6 +1006,19 @@
           "recipeImg": {
             "type": "string",
             "format": "binary"
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6462a6cd4c3d0ddd28897f8a"
+          },
+          "name": {
+            "type": "string",
+            "example": "Seafood"
           }
         }
       }
