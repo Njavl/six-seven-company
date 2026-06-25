@@ -5,6 +5,7 @@ import { upload } from '../middlewares/upload.js';
 import {
   addRecipeToFavoritesController,
   createRecipeController,
+  deleteRecipeController,
   getOwnRecipesController,
   getRecipeByIdController,
   getRecipes,
@@ -43,6 +44,8 @@ router.post(
 );
 
 router.get('/favorites', authenticate, getFavoriteRecipesController);
+
+router.delete('/:recipeId', authenticate, deleteRecipeController);
 
 router.get('/:recipeId', getRecipeByIdController);
 

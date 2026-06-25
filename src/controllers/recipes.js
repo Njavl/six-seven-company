@@ -4,6 +4,7 @@ import mongoose, { isValidObjectId } from 'mongoose';
 import {
   addRecipeToFavorites,
   createRecipe,
+  deleteOwnRecipe,
   getFavoriteRecipes,
   getOwnRecipes,
   getRecipeById,
@@ -32,6 +33,22 @@ export const removeRecipeFromFavoritesController = async (req, res, next) => {
     await removeRecipeFromFavorites(req.user._id, recipeId);
 
     res.json({ message: 'Recipe removed from favorites' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteRecipeController = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
+
+    if (!isValidObjectId(recipeId)) {
+      throw createHttpError(400, 'Invalid recipe id');
+    }
+
+    await deleteOwnRecipe(req.user._id, recipeId);
+
+    res.json({ message: 'Recipe deleted successfully' });
   } catch (error) {
     next(error);
   }

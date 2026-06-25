@@ -76,6 +76,27 @@ export const removeRecipeFromFavorites = (userId, recipeId) =>
     { new: true }
   );
 
+export const deleteOwnRecipe = async (userId, recipeId) => {
+  const recipe = await Recipe.findById(recipeId);
+
+  if (!recipe) {
+    throw createHttpError(404, 'Recipe not found');
+  }
+
+  if (recipe.owner.toString() !== userId.toString()) {
+    throw createHttpError(403, 'You can only delete your own recipes');
+  }
+
+  await Recipe.findByIdAndDelete(recipeId);
+
+  await User.updateMany(
+    { favorites: recipeId },
+    { $pull: { favorites: recipeId } }
+  );
+
+  return recipe;
+};
+
 export const getOwnRecipes = async (userId, page = 1, perPage = 12) => {
   const skip = (page - 1) * perPage;
 
